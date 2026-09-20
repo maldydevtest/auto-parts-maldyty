@@ -21,7 +21,7 @@ function About() {
   const pl = language === "pl";
   const items: Array<{ Icon: LucideIcon; title: string; text: string }> = [
     { Icon: Users, title: pl ? "Osobisty kontakt" : "Personal service", text: pl ? "Porozmawiaj z nami o swoim aucie i potrzebnej części." : "Talk to us about your car and the part you need." },
-    { Icon: PackageCheck, title: pl ? "Szeroki zakres ... " : "Broad range ... ", text: pl ? "Od hamulców i zawieszenia po chemię i akcesoria." : "From brakes and suspension to car care and accessories." },
+    { Icon: PackageCheck, title: pl ? "Szeroki zakres " : "Broad range ", text: pl ? "Od hamulców i zawieszenia po chemię i akcesoria." : "From brakes and suspension to car care and accessories." },
     { Icon: MapPin, title: "Małdyty", text: pl ? "Sklep przy ul. Prusa 5 — łatwo odebrać zamówienie na miejscu." : "Visit us at 5 Prusa Street and collect your order locally." },
     { Icon: Clock3, title: pl ? "Dogodne godziny" : "Convenient hours", text: pl ? "Otwarte od poniedziałku do soboty." : "Open Monday through Saturday." },
   ];
