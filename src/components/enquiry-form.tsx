@@ -1,0 +1,26 @@
+import { useState, type FormEvent } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { CheckCircle2, Send, TriangleAlert } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { sendEnquiry } from "@/lib/enquiry.functions";
+import { useLanguage } from "@/lib/i18n";
+
+export function EnquiryForm() {
+  const { language } = useLanguage();
+  const send = useServerFn(sendEnquiry);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "unavailable">("idle");
+  const copy = language === "pl" ? {
+    tag: "Zapytanie o części", title: "Napisz, czego szukasz", body: "Podaj dane auta i potrzebną część. Po podłączeniu bota wiadomość trafi bezpośrednio do sklepu.", name: "Imię i nazwisko", contact: "Telefon lub e-mail", car: "Marka, model, rocznik lub VIN", parts: "Potrzebne części", send: "Wyślij zapytanie", sending: "Wysyłanie…", sent: "Dziękujemy. Zapytanie zostało wysłane.", unavailable: "Formularz oczekuje na podłączenie Telegrama. Zadzwoń: 665 836 113." 
+  } : {
+    tag: "Parts enquiry", title: "Tell us what you need", body: "Add your car details and the part you need. Once the bot is connected, your message goes directly to the store.", name: "Your name", contact: "Phone or email", car: "Make, model, year or VIN", parts: "Parts needed", send: "Send enquiry", sending: "Sending…", sent: "Thank you. Your enquiry has been sent.", unavailable: "The form is waiting for Telegram setup. Please call 665 836 113."
+  };
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setStatus("sending");
+    const form = new FormData(event.currentTarget);
+    const result = await send({ data: { name: String(form.get("name") ?? ""), contact: String(form.get("contact") ?? ""), car: String(form.get("car") ?? ""), parts: String(form.get("parts") ?? ""), language } });
+    setStatus(result.ok ? "sent" : "unavailable");
+    if (result.ok) event.currentTarget.reset();
+  }
+  return <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6"><div className="glass-panel grid gap-8 p-6 sm:p-10 lg:grid-cols-2"><div><p className="label text-accent-strong">{copy.tag}</p><h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">{copy.title}</h2><p className="mt-4 max-w-md leading-relaxed text-muted-foreground">{copy.body}</p><div className="mt-7 flex items-center gap-3 rounded-xl border border-glass bg-glass p-4"><span className="grid size-10 place-items-center rounded-lg bg-primary text-primary-foreground"><Send className="size-5" /></span><div><p className="text-sm font-bold">Telegram</p><p className="text-xs text-muted-foreground">{language === "pl" ? "Bezpośrednio do obsługi sklepu" : "Directly to the store team"}</p></div></div></div><form className="space-y-4" onSubmit={submit}><div className="grid gap-4 sm:grid-cols-2"><Field name="name" label={copy.name} /><Field name="contact" label={copy.contact} /></div><Field name="car" label={copy.car} /><label className="block"><span className="field-label">{copy.parts}</span><textarea name="parts" required rows={4} className="field mt-2 resize-none" /></label><Button type="submit" variant="brand" size="xl" className="w-full" disabled={status === "sending"}>{status === "sending" ? copy.sending : copy.send}<Send /></Button>{status === "sent" && <p className="status-success"><CheckCircle2 />{copy.sent}</p>}{status === "unavailable" && <p className="status-warning"><TriangleAlert />{copy.unavailable}</p>}</form></div></section>;
+}
+function Field({ name, label }: { name: string; label: string }) { return <label className="block"><span className="field-label">{label}</span><input name={name} required className="field mt-2" /></label>; }
