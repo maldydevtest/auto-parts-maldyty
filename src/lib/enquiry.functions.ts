@@ -9,20 +9,33 @@ const enquirySchema = z.object({
   language: z.enum(["pl", "en"]),
 });
 
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 export const sendEnquiry = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => enquirySchema.parse(input))
   .handler(async ({ data }) => {
-    const lovableApiKey = process.env["LOVABLE_API_KEY"];
-    const telegramApiKey = process.env["TELEGRAM_API_KEY"];
+    const botToken = process.env["TELEGRAM_BOT_TOKEN"];
     const chatId = process.env["TELEGRAM_CHAT_ID"];
-    if (!lovableApiKey || !telegramApiKey || !chatId) {
+    if (!botToken || !chatId) {
       return { ok: false as const, reason: "not_configured" as const };
     }
-    const message = [`🚗 New parts enquiry`, `Name: ${data.name}`, `Contact: ${data.contact}`, `Car: ${data.car}`, `Parts: ${data.parts}`, `Language: ${data.language.toUpperCase()}`].join("\n");
-    const response = await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
+    const labels = data.language === "pl"
+      ? { title: "Nowe zapytanie o części", name: "Imię", contact: "Kontakt", car: "Auto", parts: "Części" }
+      : { title: "New parts enquiry", name: "Name", contact: "Contact", car: "Car", parts: "Parts" };
+    const message = [
+      `🚗 <b>${labels.title}</b>`,
+      ``,
+      `<b>${labels.name}:</b> ${escapeHtml(data.name)}`,
+      `<b>${labels.contact}:</b> ${escapeHtml(data.contact)}`,
+      `<b>${labels.car}:</b> ${escapeHtml(data.car)}`,
+      `<b>${labels.parts}:</b> ${escapeHtml(data.parts)}`,
+    ].join("\n");
+    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${lovableApiKey}`, "X-Connection-Api-Key": telegramApiKey, "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text: message }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "HTML" }),
     });
     const body = await response.text();
     if (!response.ok) {
