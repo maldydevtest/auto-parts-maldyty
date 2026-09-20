@@ -1,14 +1,16 @@
-# Welcome to your Lovable project
+# Auto Parts Maldyty
+
+Сделай мультистраничный сайт для Магазина автозапчастей В Мальдытах с логотипом "Auto Parts Store in Maldyty", сайт должен иметь продуманную структуру, красивый дизайн, который соотвествует современным реалиям и соотвествует нише мазазинов автозапчастей. На сайте должны быть так же страницы Главная, О нас, Как нас найти с Картой, Фото и Видео Магазина, Перечень продаваемых товаров. Так же на сайте должна быть форма заявки, которая будет отправлять данные в телеграм Бот. Сайт должен быть на двух языках - Польский и Английский .
 
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/c88af667-3b67-4ab6-9a19-47296bd5edf1).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +22,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
