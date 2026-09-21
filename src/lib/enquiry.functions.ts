@@ -9,7 +9,7 @@ const enquirySchema = z.object({
   language: z.enum(["pl", "en"]),
   captchaA: z.number().int().min(1).max(9),
   captchaB: z.number().int().min(1).max(9),
-  captchaAnswer: z.number().int().min(0).max(99),
+  captchaAnswer: z.number().int().min(0).max(9999),
 });
 
 function escapeHtml(value: string): string {
