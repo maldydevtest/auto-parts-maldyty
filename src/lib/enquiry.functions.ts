@@ -7,6 +7,9 @@ const enquirySchema = z.object({
   car: z.string().trim().min(2).max(150),
   parts: z.string().trim().min(3).max(1000),
   language: z.enum(["pl", "en"]),
+  captchaA: z.number().int().min(1).max(9),
+  captchaB: z.number().int().min(1).max(9),
+  captchaAnswer: z.number().int().min(0).max(9999),
 });
 
 function escapeHtml(value: string): string {
@@ -16,6 +19,9 @@ function escapeHtml(value: string): string {
 export const sendEnquiry = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => enquirySchema.parse(input))
   .handler(async ({ data }) => {
+    if (data.captchaAnswer !== data.captchaA + data.captchaB) {
+      return { ok: false as const, reason: "captcha_failed" as const };
+    }
     const botToken = process.env["TELEGRAM_BOT_TOKEN"];
     const chatId = process.env["TELEGRAM_CHAT_ID"];
     if (!botToken || !chatId) {
