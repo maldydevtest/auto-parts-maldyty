@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { CheckCircle2, RefreshCw, Send, ShieldCheck, TriangleAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,8 @@ export function EnquiryForm() {
   const { language } = useLanguage();
   const send = useServerFn(sendEnquiry);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "unavailable" | "captcha">("idle");
-  const [challenge, setChallenge] = useState(newChallenge);
+  const [challenge, setChallenge] = useState<{ a: number; b: number } | null>(null);
+  useEffect(() => { setChallenge(newChallenge()); }, []);
   const copy = language === "pl" ? {
     tag: "Zapytanie o części", title: "Napisz, czego szukasz", body: "Podaj dane auta i potrzebną część. Wiadomość trafi bezpośrednio do sklepu.", name: "Imię i nazwisko", contact: "Telefon lub e-mail", car: "Marka, model, rocznik lub VIN", parts: "Potrzebne części", captcha: "Potwierdź, że nie jesteś robotem", captchaHint: "Wpisz wynik dodawania", send: "Wyślij zapytanie", sending: "Wysyłanie…", sent: "Dziękujemy. Zapytanie zostało wysłane.", captchaError: "Nieprawidłowy wynik. Spróbuj ponownie.", unavailable: "Nie udało się wysłać wiadomości. Zadzwoń: 665 836 113."
   } : {
