@@ -44,9 +44,19 @@ export const sendEnquiry = createServerFn({ method: "POST" })
       body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "HTML" }),
     });
     const body = await response.text();
+    async function log(status: "success" | "failure", detail: string | null) {
+      try {
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        await supabaseAdmin.from("telegram_delivery_log").insert({ chat_id: chatId!, status, detail });
+      } catch (error) {
+        console.error("Delivery log write failed", error);
+      }
+    }
     if (!response.ok) {
       console.error(`Telegram request failed [${response.status}]: ${body}`);
+      await log("failure", `HTTP ${response.status}: ${body.slice(0, 300)}`);
       return { ok: false as const, reason: "delivery_failed" as const };
     }
+    await log("success", null);
     return { ok: true as const };
   });
